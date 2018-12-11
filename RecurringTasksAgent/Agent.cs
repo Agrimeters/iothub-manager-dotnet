@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using Microsoft.Azure.IoTSolutions.IotHubManager.Services;
 using Microsoft.Azure.IoTSolutions.IotHubManager.Services.Diagnostics;
+using Microsoft.Azure.IoTSolutions.IotHubManager.Services.Runtime;
 
 namespace Microsoft.Azure.IoTSolutions.IotHubManager.RecurringTasksAgent
 {
@@ -25,19 +26,27 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.RecurringTasksAgent
         
         private readonly IDeviceProperties deviceProperties;
         private readonly ILogger log;
+        private readonly IServicesConfig config;
 
         public Agent(
             IDeviceProperties deviceProperties,
-            ILogger logger)
+            ILogger logger,
+            IServicesConfig config)
         {
             this.deviceProperties = deviceProperties;
             this.log = logger;
+            this.config = config;
         }
 
         public void Run()
         {
-            this.BuildDevicePropertiesCache();
-            this.ScheduleDevicePropertiesCacheUpdate();
+            // Cache is only used by Remote Monitoring
+            // Other solutions like Device Simulation does not use cache
+            if (!this.config.DisableCache)
+            {
+                this.BuildDevicePropertiesCache();
+                this.ScheduleDevicePropertiesCacheUpdate();
+            }
         }
 
         private void BuildDevicePropertiesCache()

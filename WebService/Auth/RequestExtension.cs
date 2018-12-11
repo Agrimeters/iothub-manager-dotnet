@@ -12,6 +12,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
     {
         private const string CONTEXT_KEY_USER_CLAIMS = "CurrentUserClaims";
         private const string CONTEXT_KEY_AUTH_REQUIRED = "AuthRequired";
+        private const string CONTEXT_KEY_RBAC_REQUIRED = "RbacRequired";
         private const string CONTEXT_KEY_ALLOWED_ACTIONS = "CurrentUserAllowedActions";
         private const string CONTEXT_KEY_EXTERNAL_REQUEST = "ExternalRequest";
         // Role claim type
@@ -50,6 +51,23 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
             }
 
             return (bool)request.HttpContext.Items[CONTEXT_KEY_AUTH_REQUIRED];
+        }
+
+        // Store authentication setting in the current request
+        public static void SetRBACRequired(this HttpRequest request, bool rbacRequired)
+        {
+            request.HttpContext.Items[CONTEXT_KEY_RBAC_REQUIRED] = rbacRequired;
+        }
+
+        // Get the RBAC setting in the current request
+        public static bool GetBARCRequired(this HttpRequest request)
+        {
+            if (!request.HttpContext.Items.ContainsKey(CONTEXT_KEY_RBAC_REQUIRED))
+            {
+                return true;
+            }
+
+            return (bool)request.HttpContext.Items[CONTEXT_KEY_RBAC_REQUIRED];
         }
 
         // Store source of request in the current request

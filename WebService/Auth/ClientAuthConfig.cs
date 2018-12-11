@@ -19,6 +19,10 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
         // Default: true
         bool AuthRequired { get; set; }
 
+        // Whether the RBAC is required or optional.
+        // Default: true
+        bool RBACRequired { get; set; }
+
         // Auth type: currently supports only "JWT"
         // Default: JWT
         string AuthType { get; set; }
@@ -44,6 +48,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
         public bool CorsEnabled => !string.IsNullOrEmpty(this.CorsWhitelist.Trim());
 
         public bool AuthRequired { get; set; }
+        public bool RBACRequired { get; set; }
         public string AuthType { get; set; }
         public IEnumerable<string> JwtAllowedAlgos { get; set; }
         public string JwtIssuer { get; set; }

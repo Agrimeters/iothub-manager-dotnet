@@ -24,10 +24,12 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Runtime
         private const string APPLICATION_KEY = "IothubManagerService:";
         private const string PORT_KEY = APPLICATION_KEY + "webservice_port";
         private const string IOTHUB_CONNSTRING_KEY = APPLICATION_KEY + "iothub_connstring";
+
         private const string DEVICE_PROPERTIES_KEY = APPLICATION_KEY + "DevicePropertiesCache:"; 
         private const string DEVICE_PROPERTIES_WHITELIST_KEY = DEVICE_PROPERTIES_KEY + "whitelist";
         private const string DEVICE_PROPERTIES_TTL_KEY = DEVICE_PROPERTIES_KEY + "TTL";
         private const string DEVICE_PROPERTIES_REBUILD_TIMEOUT_KEY = DEVICE_PROPERTIES_KEY + "rebuild_timeout";
+        private const string DISABLE_CACHE_KEY = DEVICE_PROPERTIES_KEY + "disable_cache";
 
         private const string STORAGE_ADAPTER_KEY = "StorageAdapterService:";
         private const string STORAGE_ADAPTER_URL_KEY = STORAGE_ADAPTER_KEY + "webservice_url";
@@ -39,12 +41,14 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Runtime
         private const string CORS_WHITELIST_KEY = CLIENT_AUTH_KEY + "cors_whitelist";
         private const string AUTH_TYPE_KEY = CLIENT_AUTH_KEY + "auth_type";
         private const string AUTH_REQUIRED_KEY = CLIENT_AUTH_KEY + "auth_required";
+        private const string RBAC_REQUIRED_KEY = CLIENT_AUTH_KEY + "rbac_required";
 
         private const string JWT_KEY = APPLICATION_KEY + "ClientAuth:JWT:";
         private const string JWT_ALGOS_KEY = JWT_KEY + "allowed_algorithms";
         private const string JWT_ISSUER_KEY = JWT_KEY + "issuer";
         private const string JWT_AUDIENCE_KEY = JWT_KEY + "audience";
         private const string JWT_CLOCK_SKEW_KEY = JWT_KEY + "clock_skew_seconds";
+
 
         public int Port { get; }
         public IServicesConfig ServicesConfig { get; }
@@ -80,6 +84,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Runtime
                 DevicePropertiesRebuildTimeout = configData.GetInt(DEVICE_PROPERTIES_REBUILD_TIMEOUT_KEY),
                 StorageAdapterApiUrl = configData.GetString(STORAGE_ADAPTER_URL_KEY),
                 UserManagementApiUrl = configData.GetString(USER_MANAGEMENT_URL_KEY),
+                DisableCache = configData.GetBool(DISABLE_CACHE_KEY, false),
             };
 
             this.ClientAuthConfig = new ClientAuthConfig
@@ -88,6 +93,8 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Runtime
                 CorsWhitelist = configData.GetString(CORS_WHITELIST_KEY, string.Empty),
                 // By default Auth is required
                 AuthRequired = configData.GetBool(AUTH_REQUIRED_KEY, true),
+                // By default RBAC is required
+                RBACRequired = configData.GetBool(RBAC_REQUIRED_KEY, true),
                 // By default auth type is JWT
                 AuthType = configData.GetString(AUTH_TYPE_KEY, "JWT"),
                 // By default the only trusted algorithms are RS256, RS384, RS512

@@ -53,6 +53,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
         private readonly ILogger log;
         private TokenValidationParameters tokenValidationParams;
         private readonly bool authRequired;
+        private readonly bool rbacRequired;
         private bool tokenValidationInitialized;
         private readonly IUserManagementClient userManagementClient;
 
@@ -69,6 +70,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
             this.config = config;
             this.log = log;
             this.authRequired = config.AuthRequired;
+            this.rbacRequired = config.RBACRequired;
             this.tokenValidationInitialized = false;
             this.userManagementClient = userManagementClient;
 
@@ -109,6 +111,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
 
             // Store this setting to skip validating authorization in the controller if enabled
             context.Request.SetAuthRequired(this.config.AuthRequired);
+            context.Request.SetRBACRequired(this.rbacRequired);
 
             if (!context.Request.Headers.ContainsKey(EXT_RESOURCES_HEADER))
             {
@@ -191,18 +194,22 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.Auth
                     // header doesn't need to be parse again later in the User controller.
                     context.Request.SetCurrentUserClaims(jwtToken.Claims);
 
-                    // Store the user allowed actions in the request context to validate
-                    // authorization later in the controller.
-                    var userObjectId = context.Request.GetCurrentUserObjectId();
-                    var roles = context.Request.GetCurrentUserRoleClaim().ToList();
-                    if (roles.Any())
+                    // RBAC is required.
+                    if (this.rbacRequired)
                     {
-                        var allowedActions = this.userManagementClient.GetAllowedActionsAsync(userObjectId, roles).Result;
-                        context.Request.SetCurrentUserAllowedActions(allowedActions);
-                    }
-                    else
-                    {
-                        this.log.Error("JWT token doesn't include any role claims.", () => { });
+                        // Store the user allowed actions in the request context to validate
+                        // authorization later in the controller.
+                        var userObjectId = context.Request.GetCurrentUserObjectId();
+                        var roles = context.Request.GetCurrentUserRoleClaim().ToList();
+                        if (roles.Any())
+                        {
+                            var allowedActions = this.userManagementClient.GetAllowedActionsAsync(userObjectId, roles).Result;
+                            context.Request.SetCurrentUserAllowedActions(allowedActions);
+                        }
+                        else
+                        {
+                            this.log.Error("JWT token doesn't include any role claims.", () => { });
+                        }
                     }
 
                     return true;

@@ -11,6 +11,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.Services.Runtime
         // ReSharper disable once InconsistentNaming
         long DevicePropertiesTTL { get; }
         long DevicePropertiesRebuildTimeout { get; }
+        bool DisableCache { get; }
     }
 
     public class ServicesConfig : IServicesConfig
@@ -22,5 +23,6 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.Services.Runtime
         public string DevicePropertiesWhiteList { get; set; }
         public long DevicePropertiesTTL { get; set; }
         public long DevicePropertiesRebuildTimeout { get; set; }
+        public bool DisableCache { get; set; }
     }
 }

@@ -53,7 +53,7 @@ namespace Microsoft.Azure.IoTSolutions.IotHubManager.WebService.v1.Filters
         /// <returns>true if validatation succeed</returns>
         private bool ValidateAuthorization(HttpContext httpContext, string allowedAction)
         {
-            if (!httpContext.Request.GetAuthRequired() || !httpContext.Request.IsExternalRequest()) return true;
+            if (!httpContext.Request.GetBARCRequired() || !httpContext.Request.GetAuthRequired() || !httpContext.Request.IsExternalRequest()) return true;
 
             if (allowedAction == null || !allowedAction.Any()) return true;
 
